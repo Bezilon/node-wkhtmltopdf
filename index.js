@@ -102,7 +102,7 @@ function wkhtmltopdf(input, options, callback) {
     // this nasty business prevents piping problems on linux
     // The return code should be that of wkhtmltopdf and not of cat
     // http://stackoverflow.com/a/18295541/1705056
-    console.log('wkhteml.shell: ', wkhtmltopdf.shell)
+    args[0] = 'xvfb ' + args[0]
     var child = spawn(wkhtmltopdf.shell, ['-c', args.join(' ') + ' | cat ; exit ${PIPESTATUS[0]}']);
   }
 
