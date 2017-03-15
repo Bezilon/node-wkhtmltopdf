@@ -85,7 +85,8 @@ function wkhtmltopdf(input, options, callback) {
     }
   });
 
-  var isUrl = /^((https?|file):\/\/)|^([a-zA-Z]:\\)|^(\/)|^(~\/)|^([.]\/)|^([.][.]\/)|(^[^<]?\w+[^>]?)/.test(input);
+  // Test additionally for local paths in either linux or windows format ( ./file, ../file, ~/file, /file, C:\file, .\file, ..\file )
+  var isUrl = /^((https?|file):\/\/)|^([a-zA-Z]:\\)|^(\/)|^(~\/)|^([.]{1,2}(\/|\\))|(^[^<]?\w+[^>]?)/.test(input);
   args.push(isUrl ? quote(input) : '-');    // stdin if HTML given directly
   args.push(output ? quote(output) : '-');  // stdout if no output file
 
