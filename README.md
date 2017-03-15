@@ -37,7 +37,11 @@ wkhtmltopdf('<h1>Test</h1><p>Hello world</p>')
 // Stream input and output
 var stream = wkhtmltopdf(fs.createReadStream('file.html'));
 
-// output to a file directly
+// Input from absolute and relative paths
+var stream = wkhtmltopdf('./file.html');
+var streamWin = wkhtmltopdf('C:\file.html');
+
+// Output to a file directly
 wkhtmltopdf('http://apple.com/', { output: 'out.pdf' });
 
 // Optional callback
