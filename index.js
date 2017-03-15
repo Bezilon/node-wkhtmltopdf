@@ -85,27 +85,27 @@ function wkhtmltopdf(input, options, callback) {
     }
   });
 
-  var isUrl = /^(https?|file):\/\//.test(input);
+  var isUrl = /^((https?|file):\/\/)|^([a-zA-Z]:\\)|^(\/)|^(~\/)|^([.]\/)|^([.][.]\/)|(^[^<]?\w+[^>]?)/.test(input);
   args.push(isUrl ? quote(input) : '-');    // stdin if HTML given directly
   args.push(output ? quote(output) : '-');  // stdout if no output file
-
-  // show the command that is being run if debug opion is passed
-  if (options.debug && !(options instanceof Function)) {
-    console.log('[node-wkhtmltopdf] [debug] [command] ' + args.join(' '));
-  }
 
   if (process.platform === 'win32') {
     var child = spawn(args[0], args.slice(1));
   } else if (process.platform === 'darwin') {
     var child = spawn('/bin/sh', ['-c', args.join(' ') + ' | cat ; exit ${PIPESTATUS[0]}']);
   } else if (process.platform === 'linux') {
-    args.unshift('xvfb-run')
+    args.unshift('xvfb-run');
     var child = spawn(wkhtmltopdf.shell, ['-c', args.join(' ') + ' | cat ; exit ${PIPESTATUS[0]}']);
   } else {
     // this nasty business prevents piping problems on linux
     // The return code should be that of wkhtmltopdf and not of cat
     // http://stackoverflow.com/a/18295541/1705056
     var child = spawn(wkhtmltopdf.shell, ['-c', args.join(' ') + ' | cat ; exit ${PIPESTATUS[0]}']);
+  }
+
+  // show the command that is being run if debug opion is passed
+  if (options.debug && !(options instanceof Function)) {
+    console.log('[node-wkhtmltopdf] [debug] [command] ' + args.join(' '));
   }
 
   var stream = child.stdout;
@@ -156,7 +156,9 @@ function wkhtmltopdf(input, options, callback) {
 
     // if not, or there are listeners for errors, emit the error event
     if (!callback || stream.listeners('error').length > 0) {
-      stream.emit('error', errObj);
+      if(isStream(stream)) {
+        stream.emit('error', errObj);
+      }
     }
   }
 
