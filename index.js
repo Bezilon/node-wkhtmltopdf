@@ -89,8 +89,6 @@ function wkhtmltopdf(input, options, callback) {
   var isUrl = /^((https?|file):\/\/)|^([a-zA-Z]:\\)|^(\/)|^(~\/)|^([.]{1,2}(\/|\\))/.test(input);
   args.push(isUrl === true ? ('"' + input + '"') : '-');  // stdin if HTML given directly
   args.push(output ? ('"' + output + '"') : '-');  // stdout if no output file
-  
-  if(options.debug) console.log('Arguments used for child process:', args)
 
   if (process.platform === 'win32') {
     var child = spawn(args[0], args.slice(1));
@@ -115,7 +113,8 @@ function wkhtmltopdf(input, options, callback) {
 
   // call the callback with null error when the process exits successfully
   child.on('exit', function(code) {
-    if (code === 0 || code === 1) {
+    if (code == 0 || code == 1) {
+      if (options.debug) console.log('wkhtmltopdf exited with code ' + code)
       if (callback) {
         callback(null, stream); // stream is child.stdout
       }
