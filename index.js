@@ -115,12 +115,14 @@ function wkhtmltopdf(input, options, callback) {
 
   // call the callback with null error when the process exits successfully
   child.on('exit', function(code) {
-    if (code !== 0) {
+    if (code === 0 || code === 1)
+      if (callback) {
+        callback(null, stream); // stream is child.stdout
+      }
+    } else (code !== 0) {
       stderrMessages.push('wkhtmltopdf exited with code ' + code);
       handleError(stderrMessages);
-    } else if (callback) {
-      callback(null, stream); // stream is child.stdout
-    }
+    }    
   });
 
   // setup error handling
