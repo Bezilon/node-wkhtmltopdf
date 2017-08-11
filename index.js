@@ -119,7 +119,7 @@ function wkhtmltopdf(input, options, callback) {
       if (callback) {
         callback(null, stream); // stream is child.stdout
       }
-    } else (code !== 0) {
+    } else {
       stderrMessages.push('wkhtmltopdf exited with code ' + code);
       handleError(stderrMessages);
     }    
