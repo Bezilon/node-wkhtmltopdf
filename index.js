@@ -88,21 +88,23 @@ function wkhtmltopdf(input, options, callback) {
 
   // Test additionally for local paths in either linux or windows format ( ./file, ../file, ~/file, /file, C:\file, .\file, ..\file )
   var isUrl = /^((https?|file):\/\/)|^([a-zA-Z]:\\)|^(\/)|^(~\/)|^([.]{1,2}(\/|\\))/.test(input);
-  args.push(isUrl === true ? ('"' + input + '"') : '-');  // stdin if HTML given directly
-  args.push(output ? ('"' + output + '"') : '-');  // stdout if no output file
+  args.push(isUrl === true ? (`"${input}"`) : '-');  // stdin if HTML given directly
+  args.push(output ? (`"${output}"`) : '-');  // stdout if no output file
+
+  var child = null
 
   if (process.platform === 'win32') {
-    var child = spawn(args[0], args.slice(1));
+    child = spawn(args[0], args.slice(1));
   } else if (process.platform === 'darwin') {
-    var child = spawn('/bin/sh', ['-c', args.join(' ') + ' | cat ; exit ${PIPESTATUS[0]}']);
+    child = spawn('/bin/sh', ['-c', `${args.join(' ')} | cat ; exit ${PIPESTATUS[0]}`]);
   } else if (process.platform === 'linux') {
-    args.unshift('xvfb-run');
-    var child = spawn(wkhtmltopdf.shell, ['-c', args.join(' ') + ' | cat ; exit ${PIPESTATUS[0]}']);
+    // args.unshift('xvfb-run');
+    child = spawn(wkhtmltopdf.shell, ['-c', `${args.join(' ')} | cat ; exit ${PIPESTATUS[0]}`]);
   } else {
     // this nasty business prevents piping problems on linux
     // The return code should be that of wkhtmltopdf and not of cat
     // http://stackoverflow.com/a/18295541/1705056
-    var child = spawn(wkhtmltopdf.shell, ['-c', args.join(' ') + ' | cat ; exit ${PIPESTATUS[0]}']);
+    child = spawn(wkhtmltopdf.shell, ['-c', `${args.join(' ')} | cat ; exit ${PIPESTATUS[0]}`]);
   }
 
   // show the command that is being run if debug opion is passed
@@ -149,7 +151,7 @@ function wkhtmltopdf(input, options, callback) {
       }
       errObj = new Error(err.join('\n'));
     } else if (err) {
-      errObj =  new Error(err);
+      errObj = new Error(err);
     }
     child.removeAllListeners('exit');
     child.kill();
