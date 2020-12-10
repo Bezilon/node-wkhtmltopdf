@@ -96,15 +96,15 @@ function wkhtmltopdf(input, options, callback) {
   if (process.platform === 'win32') {
     child = spawn(args[0], args.slice(1));
   } else if (process.platform === 'darwin') {
-    child = spawn('/bin/sh', ['-c', `${args.join(' ')} | cat ; exit \${PIPESTATUS[0]}`]);
+    child = spawn('/bin/sh', ['-c', `${args.join(' ')} | cat ; exit ${PIPESTATUS[0]}`]);
   } else if (process.platform === 'linux') {
     // args.unshift('xvfb-run');
-    child = spawn(wkhtmltopdf.shell, ['-c', `${args.join(' ')} | cat ; exit \${PIPESTATUS[0]}`]);
+    child = spawn(wkhtmltopdf.shell, ['-c', `${args.join(' ')} | cat ; exit ${PIPESTATUS[0]}`]);
   } else {
     // this nasty business prevents piping problems on linux
     // The return code should be that of wkhtmltopdf and not of cat
     // http://stackoverflow.com/a/18295541/1705056
-    child = spawn(wkhtmltopdf.shell, ['-c', `${args.join(' ')} | cat ; exit \${PIPESTATUS[0]}`]);
+    child = spawn(wkhtmltopdf.shell, ['-c', `${args.join(' ')} | cat ; exit ${PIPESTATUS[0]}`]);
   }
 
   // show the command that is being run if debug opion is passed
